@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>pinball-expanded</title>
+<style>
+canvas {
+	border: 3px solid #d3d3d3;
+	background-color: gray;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas" width=canvasWidth height=canvasHeight></canvas>
+<script>
+canvasWidth = 400;
+canvasHeight = 700;
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+//set canvas size
+canvas.width = canvasWidth;
+canvas.height = canvasHeight;
+
+//circle
+ctx.beginPath();
+ctx.arc(100, 75, 24, 0, 2 * Math.PI);
+ctx.stroke(); 
+</script>
+</body>
+
+</html>
