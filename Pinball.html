@@ -19,7 +19,7 @@ function Ball(ballX,ballY){
                 velocityAngle = Math.atan2(this.dy,this.dx);
                 velocityMagnitude = Math.sqrt(this.dx*this.dx+this.dy*this.dy);
                 angleDifference = velocityAngle-angleToBumper;
-                velocityAngle = velocityAngle+angleDifference;
+                velocityAngle = velocityAngle-angleDifference;
                 this.x = bumper[z].x+Math.cos(angleToBumper)*(bumperBallDistance+1);
                 this.y = bumper[z].y+Math.sin(angleToBumper)*(bumperBallDistance+1);
                 this.dx = velocityMagnitude*Math.cos(velocityAngle);
