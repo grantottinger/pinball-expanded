@@ -5,6 +5,7 @@
 function distance(x1,y1,x2,y2){
     return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
+
 function Ball(ballX,ballY){
     this.x = ballX;
     this.y = ballY;
@@ -58,6 +59,8 @@ function redrawEverything(){
         ctx.arc(ball[a].x,ball[a].y,ballRadius,0,Math.PI*2);
         ctx.fill();
     }
+	
+	//draw bumpers
     ctx.fillStyle = "blue";
     for(a=0;a<bumper.length;a++){
         ctx.beginPath();
