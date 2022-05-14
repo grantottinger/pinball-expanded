@@ -113,7 +113,7 @@ for(a=0;a<10;a++){
     bumper.push(new Bumper(bumperRadius+(cnvs.width-bumperRadius*2)*Math.random(),Math.random()*(cnvs.height-200)+100))
 }
 
-//updates ball
+//updates ball and redraws objects
 function updateCanvas(){
 for(a=0;a<ball.length;a++){
         ball[a].update();
