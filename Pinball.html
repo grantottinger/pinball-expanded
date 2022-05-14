@@ -94,23 +94,34 @@ cnvs = document.getElementById("theCanvas");
 ctx = cnvs.getContext("2d");
 ballRadius = 10;
 bumperRadius = 15;
+
 bumperBallDistance = ballRadius+bumperRadius;
+
+//creating array of balls
 ball = [];
 
+//filling array of balls
 for(a=0;a<30;a++){
     ball.push(new Ball(ballRadius+(cnvs.width-ballRadius*2)*Math.random(),0));
 }
 
+//creating array of bumpers
 bumper = [];
+
+//filling array of bumpers
 for(a=0;a<10;a++){
     bumper.push(new Bumper(bumperRadius+(cnvs.width-bumperRadius*2)*Math.random(),Math.random()*(cnvs.height-200)+100))
 }
 
-setInterval(function(){
-    for(a=0;a<ball.length;a++){
+//updates ball
+function updateCanvas(){
+for(a=0;a<ball.length;a++){
         ball[a].update();
     }
     redrawEverything();
-},33)
+}
+
+setInterval(updateCanvas()
+    ,33)
 </script>
 </html>
