@@ -69,11 +69,11 @@ function Bumper(bumperX,bumperY){
 }
 
 function redrawEverything(){
-    //Black out screen
+    //black out screen
     ctx.fillStyle = "black";
     ctx.fillRect(0,0,cnvs.width,cnvs.height);
 	
-    //Draw balls
+    //draw balls
     ctx.fillStyle = "white";
     for(a=0;a<ball.length;a++){
         ctx.beginPath();
@@ -89,19 +89,23 @@ function redrawEverything(){
         ctx.fill();
     }
 }
+
 cnvs = document.getElementById("theCanvas");
 ctx = cnvs.getContext("2d");
 ballRadius = 10;
 bumperRadius = 15;
 bumperBallDistance = ballRadius+bumperRadius;
 ball = [];
+
 for(a=0;a<30;a++){
     ball.push(new Ball(ballRadius+(cnvs.width-ballRadius*2)*Math.random(),0));
 }
+
 bumper = [];
 for(a=0;a<10;a++){
     bumper.push(new Bumper(bumperRadius+(cnvs.width-bumperRadius*2)*Math.random(),Math.random()*(cnvs.height-200)+100))
 }
+
 setInterval(function(){
     for(a=0;a<ball.length;a++){
         ball[a].update();
