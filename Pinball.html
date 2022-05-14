@@ -28,16 +28,21 @@ function Ball(ballX,ballY){
         for(z=0;z<bumper.length;z++){
 		
 			//if colliding with the bumper
-            if(distance(this.x,this.y,bumper[z].x,bumper[z].y)<bumperBallDistance){
-                angleToBumper = Math.atan2(this.y-bumper[z].y,this.x-bumper[z].x);
-                velocityAngle = Math.atan2(this.dy,this.dx);
-                velocityMagnitude = Math.sqrt(this.dx*this.dx+this.dy*this.dy)*.3;
+            if(distance(this.x, this.y, bumper[z].x, bumper[z].y) < bumperBallDistance){
+                angleToBumper = Math.atan2((this.y - bumper[z].y), (this.x - bumper[z].x));
+                velocityAngle = Math.atan2(this.dy, this.dx);
+                velocityMagnitude = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy))*.3;
+				
                 angleDifference = velocityAngle-angleToBumper;
+				
                 velocityAngle = velocityAngle-angleDifference;
-                this.x = bumper[z].x+Math.cos(angleToBumper)*(bumperBallDistance+1);
-                this.y = bumper[z].y+Math.sin(angleToBumper)*(bumperBallDistance+1);
-                this.dx = velocityMagnitude*Math.cos(velocityAngle);
-                this.dy = velocityMagnitude*Math.sin(velocityAngle);
+				
+                this.x = bumper[z].x + Math.cos(angleToBumper) * (bumperBallDistance+1);
+                this.y = bumper[z].y + Math.sin(angleToBumper) * (bumperBallDistance+1);
+				
+				
+                this.dx = velocityMagnitude * Math.cos(velocityAngle);
+                this.dy = velocityMagnitude * Math.sin(velocityAngle);
             }
         }
 		
@@ -90,9 +95,14 @@ function redrawEverything(){
     }
 }
 
+//draws canvas
 cnvs = document.getElementById("theCanvas");
 ctx = cnvs.getContext("2d");
+
+//sets size of ball
 ballRadius = 10;
+
+//sets size of bumper
 bumperRadius = 15;
 
 bumperBallDistance = ballRadius+bumperRadius;
@@ -121,6 +131,6 @@ for(a=0;a<ball.length;a++){
     redrawEverything();
 }
 
-setInterval(updateCanvas,33)
+setInterval(updateCanvas,33);
 </script>
 </html>
