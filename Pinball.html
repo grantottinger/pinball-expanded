@@ -1,6 +1,15 @@
 <html>
 <canvas id="theCanvas" width="600" height="600" style="border: 1px solid black"></canvas>
+
 <script>
+
+numberOfBalls = 30;
+
+function buttonSubmit() {
+	ball = [];
+	fillBallsArray(document.getElementById('numberOfBallsField').value);
+	}
+
 //finds distance between two points
 function distance(x1,y1,x2,y2){
     return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
@@ -111,9 +120,14 @@ bumperBallDistance = ballRadius+bumperRadius;
 ball = [];
 
 //filling array of balls
-for(a=0;a<30;a++){
+function fillBallsArray(x) {
+	for(a=0;a<x;a++){
     ball.push(new Ball(ballRadius+(cnvs.width-ballRadius*2)*Math.random(),0));
+	}
 }
+
+//initial array of balls
+fillBallsArray(30);
 
 //creating array of bumpers
 bumper = [];
@@ -133,4 +147,8 @@ for(a=0;a<ball.length;a++){
 
 setInterval(updateCanvas,33);
 </script>
+<br>
+number of balls: 
+<input type="number" id="numberOfBallsField">
+<button type="button" onclick="buttonSubmit()">submit</button>
 </html>
