@@ -1,0 +1,47 @@
+<html>
+<canvas id="theCanvas" width="600" height="600" style="border: 1px solid black"></canvas>
+<script>
+function Ball(ballX,ballY){
+    this.x = ballX;
+    this.y = ballY;
+    this.dx = 0;
+    this.dy = 0;
+    this.update = function(){
+        this.x += this.dx;
+        this.y += this.dy;
+        this.dy += 1;
+        if(this.y>=cnvs.height+ballRadius){
+            this.x = ballRadius+(cnvs.width-ballRadius*2)*Math.random();
+            this.y = 0;
+            this.dy = 0;
+        }
+    }
+}
+function redrawEverything(){
+    //Black out screen
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,cnvs.width,cnvs.height);
+    //Draw balls
+    ctx.fillStyle = "rgb(200,200,200)";
+    ctx.beginPath();
+    ctx.arc(ball[0].x,ball[0].y,ballRadius,0,Math.PI*2);
+    ctx.fill();
+}
+cnvs = document.getElementById("theCanvas");
+ctx = cnvs.getContext("2d");
+ballRadius = 10;
+bumperRadius = 15;
+ball = [];
+ball.push(new Ball(ballRadius+(cnvs.width-ballRadius*2)*Math.random(),0));
+bumper = [];
+for(a=0;a<5;a++){
+    bumper.push(new Bumper(bumperRadius+(cnvs.width-bumperRadius*2)*Math.random(),Math.random()*(cnvs.height-200)+100))
+}
+setInterval(function(){
+    for(a=0;a<ball.length;a++){
+        ball[a].update();
+    }
+    redrawEverything();
+},33)
+</script>
+</html>
