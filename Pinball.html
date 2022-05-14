@@ -7,15 +7,27 @@ function distance(x1,y1,x2,y2){
 }
 
 function Ball(ballX,ballY){
-    this.x = ballX;
+    //ball coordinates
+	this.x = ballX;
     this.y = ballY;
+	
+	//ball velocity
     this.dx = Math.random()*2-1;
     this.dy = 0;
+	
+	
     this.update = function(){
+		//adding velocity to position
         this.x += this.dx;
         this.y += this.dy;
+		
+		//gravity velocity
         this.dy += 1;
+		
+		//check for collision against each bumper
         for(z=0;z<bumper.length;z++){
+		
+			//if colliding with the bumper
             if(distance(this.x,this.y,bumper[z].x,bumper[z].y)<bumperBallDistance){
                 angleToBumper = Math.atan2(this.y-bumper[z].y,this.x-bumper[z].x);
                 velocityAngle = Math.atan2(this.dy,this.dx);
@@ -28,30 +40,39 @@ function Ball(ballX,ballY){
                 this.dy = velocityMagnitude*Math.sin(velocityAngle);
             }
         }
+		
+		//when ball reachs bottom, goes to random position at top of canvas
         if(this.y>=cnvs.height+ballRadius){
             this.x = ballRadius+(cnvs.width-ballRadius*2)*Math.random();
             this.y = 0;
             this.dx = 0;
             this.dy = 0;
         }
+		
+		//left wall border bounce-back
         if(this.x<ballRadius){
             this.dx = -this.dx;
             this.x = ballRadius;
         }
+		
+		//right wall border bounce-back
         if(this.x>cnvs.width-ballRadius){
             this.dx = -this.dx;
             this.x = cnvs.width-ballRadius;
         }
     }
 }
+
 function Bumper(bumperX,bumperY){
     this.x = bumperX;
     this.y = bumperY;
 }
+
 function redrawEverything(){
     //Black out screen
     ctx.fillStyle = "black";
     ctx.fillRect(0,0,cnvs.width,cnvs.height);
+	
     //Draw balls
     ctx.fillStyle = "white";
     for(a=0;a<ball.length;a++){
