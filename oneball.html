@@ -1,0 +1,164 @@
+<html>
+<canvas id="theCanvas" width="350" height="600" style="border: 1px solid black"></canvas>
+<script>
+//finds distance between two points
+function distance(x1,y1,x2,y2){
+    return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+}
+
+function Ball(ballX,ballY){
+    //ball coordinates
+	this.x = ballX;
+    this.y = ballY;
+	
+	//ball velocity
+    this.dx = Math.random()*2-1;
+    this.dy = 0;
+	
+	
+    this.update = function(){
+		//adding velocity to position
+        this.x += this.dx;
+        this.y += this.dy;
+		
+		//gravity velocity
+        this.dy += 1;
+		
+		//check for collision against each bumper
+        for(z=0;z<bumper.length;z++){
+		
+			//if colliding with the bumper
+            if(distance(this.x, this.y, bumper[z].x, bumper[z].y) < bumperBallDistance){
+                angleToBumper = Math.atan2((this.y - bumper[z].y), (this.x - bumper[z].x));
+                velocityAngle = Math.atan2(this.dy, this.dx);
+                velocityMagnitude = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy))*.5;
+				
+                angleDifference = velocityAngle-angleToBumper;
+				
+                velocityAngle = velocityAngle-angleDifference;
+				
+                this.x = bumper[z].x + Math.cos(angleToBumper) * (bumperBallDistance+1);
+                this.y = bumper[z].y + Math.sin(angleToBumper) * (bumperBallDistance+1);
+				
+				
+                this.dx = velocityMagnitude * Math.cos(velocityAngle);
+                this.dy = velocityMagnitude * Math.sin(velocityAngle);
+            }
+        }
+		
+		//when ball reachs bottom, goes to random position at top of canvas
+        if(this.y>=cnvs.height+ballRadius){
+            this.x = 101;
+            this.y = 0;
+            this.dx = 0;
+            this.dy = 0;
+        }
+		
+		//left wall border bounce-back
+        if(this.x<ballRadius){
+            this.dx = -this.dx;
+            this.x = ballRadius;
+        }
+		
+		//right wall border bounce-back
+        if(this.x>cnvs.width-ballRadius){
+            this.dx = -this.dx;
+            this.x = cnvs.width-ballRadius;
+        }
+    }
+}
+
+function Bumper(bumperX,bumperY){
+    this.x = bumperX;
+    this.y = bumperY;
+}
+
+function redrawEverything(){
+    //black out screen
+    ctx.fillStyle = "gray";
+    ctx.fillRect(0,0,cnvs.width,cnvs.height);
+	
+    //draw balls
+    ctx.fillStyle = "white";
+    for(a=0;a<ball.length;a++){
+        ctx.beginPath();
+        ctx.arc(ball[a].x,ball[a].y,ballRadius,0,Math.PI*2);
+        ctx.fill();
+    }
+	
+	//draw bumpers
+    ctx.fillStyle = "blue";
+    for(a=0;a<bumper.length;a++){
+        ctx.beginPath();
+        ctx.arc(bumper[a].x,bumper[a].y,bumperRadius,0,Math.PI*2);
+        ctx.fill();
+    }
+	
+	drawTriangle();
+	drawPaddle((cnvs.width/3)-7.5,(cnvs.height/8)*7);
+	drawPaddle(((cnvs.width/3)*2)-7.5,(cnvs.height/8)*7);
+}
+
+//draws canvas
+cnvs = document.getElementById("theCanvas");
+ctx = cnvs.getContext("2d");
+
+//sets size of ball
+ballRadius = 10;
+
+//sets size of bumper
+bumperRadius = 18;
+
+bumperBallDistance = ballRadius+bumperRadius;
+
+//creating array of balls
+ball = [];
+
+//filling array of balls
+for(a=0;a<1;a++){
+    ball.push(new Ball(ballRadius+(cnvs.width-ballRadius*2)*Math.random(),0));
+}
+
+//creating array of bumpers
+bumper = [];
+
+//filling array of bumpers
+//for(a=0;a<1;a++){
+    bumper.push(new Bumper((cnvs.width/4),(cnvs.height/5)))
+	bumper.push(new Bumper((cnvs.width/4)*3,(cnvs.height/5)))
+	bumper.push(new Bumper((cnvs.width/2),(cnvs.height/3)))
+
+//}
+
+function drawTriangle(x1, y1, x2, y2, x3, y3) {
+	ctx.fillStyle = "black";
+	ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x3, y3);
+    ctx.fill();
+}
+
+function drawPaddle(x,y) {
+	ctx.beginPath();
+	ctx.moveTo(x, y)
+	ctx.arc(x+8,y,7.5,Math.PI,2 * Math.PI)
+	ctx.lineTo(x+12,y+30)
+	ctx.arc(x+8,y+30,4,0,Math.PI)
+	ctx.fill();
+}
+
+//updates ball and redraws objects
+function updateCanvas(){
+for(a=0;a<ball.length;a++){
+        ball[a].update();
+    }
+    redrawEverything();
+}
+
+setInterval(updateCanvas,33);
+</script>
+<br>
+<input type="number">
+<button type="submit" id="submit">submit</button>
+</html>
