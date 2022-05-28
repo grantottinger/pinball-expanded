@@ -1,0 +1,218 @@
+<html>
+<canvas id="theCanvas" width="400" height="800" style="border: 1px solid black"></canvas>
+<script>
+function Ball(ballX,ballY,ballHorizontalSpeed,ballVerticalSpeed){
+    this.x = ballX;
+    this.y = ballY;
+    this.dx = ballHorizontalSpeed;
+    this.dy = ballVerticalSpeed;
+    this.radius = 10;
+    this.draw = function(){
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.radius,0,TAU);
+        ctx.fill();
+    }
+    this.update = function(){
+        this.x += this.dx;
+        this.y += this.dy;
+    }
+}
+function Bumper(bumperX,bumperY,bumperRadius){
+    this.x = bumperX;
+    this.y = bumperY;
+    this.radius = bumperRadius;
+    this.draw = function(){
+        ctx.fillStyle = "cyan";
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.radius,0,TAU);
+        ctx.fill();
+    }
+}
+function Rollover(rolloverStart,rolloverEnd,rolloverParts){
+    this.start = rolloverStart;
+    this.end = rolloverEnd;
+    this.parts = rolloverParts;
+    this.perpendicular = Math.atan2(this.start.y-this.end.y,this.start.x-this.end.x)+(TAU/4);
+    this.draw = function(){
+        for(z=0;z<=parts;z++){
+
+        }
+    }
+}
+function Spinner(spinnerX,spinnerY){
+    this.x = spinnerX;
+    this.y = spinnerY;
+    this.radius = 20;
+    this.draw = function(){
+        eighth = TAU/8;
+        ctx.strokeStyle = "cyan";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(this.x+this.radius*Math.cos(eighth),this.y-this.radius*Math.sin(eighth));
+        ctx.lineTo(this.x+this.radius*Math.cos(5*eighth),this.y-this.radius*Math.sin(5*eighth));
+        ctx.moveTo(this.x+this.radius*Math.cos(3*eighth),this.y-this.radius*Math.sin(3*eighth));
+        ctx.lineTo(this.x+this.radius*Math.cos(7*eighth),this.y-this.radius*Math.sin(7*eighth));
+        ctx.stroke();
+    }
+}
+function MenuButton(menuX,menuY,menuWidth,menuHeight){
+    this.x = menuX;
+    this.y = menuY;
+    this.width = menuWidth;
+    this.height = menuHeight;
+    this.purchasable = true;
+    this.purchased = false;
+}
+function drawGame(){
+    //Gray background
+    ctx.fillStyle = "rgb(63,63,63)";
+    ctx.fillRect(0,0,cnvs.width,cnvs.height);
+    //Bottom left wall
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(0,cnvs.height*10/20);
+    ctx.lineTo(cnvs.width/10,cnvs.height*13/20);
+    ctx.lineTo(cnvs.width/10,cnvs.height*14/20);
+    ctx.lineTo(cnvs.width*3/10,cnvs.height*18/20);
+    ctx.lineTo(cnvs.width*3/10,cnvs.height);
+    ctx.lineTo(0,cnvs.height);
+    ctx.lineTo(0,cnvs.height*13/20);
+    ctx.fill();
+    //Bottom right wall
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(cnvs.width*9/10,cnvs.height*14/20);
+    ctx.lineTo(cnvs.width*9/10,cnvs.height);
+    ctx.lineTo(cnvs.width*7/10,cnvs.height);
+    ctx.lineTo(cnvs.width*7/10,cnvs.height*18/20);
+    ctx.fill();
+    //Region lines
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "white";
+    ctx.beginPath();
+    ctx.moveTo(0,cnvs.height*13/20);
+    ctx.lineTo(cnvs.width,cnvs.height*13/20);
+    ctx.moveTo(0,cnvs.height*7/20);
+    ctx.lineTo(cnvs.width,cnvs.height*7/20);
+    ctx.moveTo(cnvs.width*3/10,0);
+    ctx.lineTo(cnvs.width*3/10,cnvs.height*7/20);
+    ctx.moveTo(cnvs.width*7/10,0);
+    ctx.lineTo(cnvs.width*7/10,cnvs.height*7/20);
+    ctx.moveTo(cnvs.width/2,cnvs.height*7/20);
+    ctx.lineTo(cnvs.width/2,cnvs.height*13/20);
+    ctx.stroke();
+    //Draw balls, bumpers, and spinners
+    for(a=0;a<ball.length;a++){
+        ball[a].draw();
+    }
+    for(a=0;a<bumper.length;a++){
+        bumper[a].draw();
+    }
+    for(a=0;a<spinner.length;a++){
+        spinner[a].draw();
+    }
+    //Draw menu button
+    ctx.fillStyle = "white";
+    ctx.fillRect(cnvs.width/10,cnvs.height*18/20,cnvs.width/10,cnvs.height/20);
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("MENU",cnvs.width*1.5/10,cnvs.height*18.5/20);
+}
+function drawMenu(){
+    drawGame();
+    ctx.fillStyle = "black";
+    ctx.fillRect(cnvs.width/4,cnvs.height/8,cnvs.width/2,cnvs.height*3/4);
+    for(a=0;a<menuButton.length;a++){
+        if(menuButton[a].purchased===true){
+            ctx.fillStyle = "gray";
+        }
+        else{
+            if(menuButton[a].purchasable===true){
+                ctx.fillStyle = "green";
+            }
+            else{
+                ctx.fillStyle = "red";
+            }
+        }
+        ctx.fillRect(menuButton[a].x,menuButton[a].y,menuButton[a].width,menuButton[a].height);
+    }
+}
+function updateGame(){
+    for(a=0;a<ball.length;a++){
+        ball[a].update();
+    }
+}
+TAU = Math.PI*2;
+cnvs = document.getElementById("theCanvas");
+ctx = cnvs.getContext("2d");
+gameState = {mode:"menu"};
+ball = [];
+bumper = [];
+paddle = [];
+rollover = [];
+spinner = [];
+wall = [];
+ball.push(new Ball(200,400,0,0.5));
+bumper.push(new Bumper(cnvs.width*1.5/10,cnvs.height*2/20,10));
+bumper.push(new Bumper(cnvs.width*1.5/10,cnvs.height*4/20,15));
+bumper.push(new Bumper(cnvs.width*1.5/10,cnvs.height*6/20,20));
+bumper.push(new Bumper(cnvs.width*4/10,cnvs.height*2/20,15));
+bumper.push(new Bumper(cnvs.width*6/10,cnvs.height*2/20,15));
+bumper.push(new Bumper(cnvs.width*4/10,cnvs.height*6/20,15));
+bumper.push(new Bumper(cnvs.width*6/10,cnvs.height*6/20,15));
+bumper.push(new Bumper(cnvs.width*1/10,cnvs.height*9/20,15));
+bumper.push(new Bumper(cnvs.width*3/10,cnvs.height*8/20,15));
+bumper.push(new Bumper(cnvs.width/2,cnvs.height*16/20,15));
+bumper.push(new Bumper(cnvs.width/2,cnvs.height*14/20,15));
+spinner.push(new Spinner(cnvs.width*8.5/10,cnvs.height*2/20));
+spinner.push(new Spinner(cnvs.width*8.5/10,cnvs.height*4/20));
+spinner.push(new Spinner(cnvs.width*8.5/10,cnvs.height*6/20));
+spinner.push(new Spinner(cnvs.width*7/10,cnvs.height*9/20));
+spinner.push(new Spinner(cnvs.width*6/10,cnvs.height*11/20));
+menuButton = [];
+menuButton.push(new MenuButton(150,150,100,100));
+cnvs.onclick = function(eventProperties){
+    mouseX = eventProperties.clientX - cnvs.offsetLeft;
+    mouseY = eventProperties.clientY - cnvs.offsetTop;
+    if(gameState.mode==="menu"){
+        for(a=0;a<menuButton.length;a++){
+            if((mouseX<menuButton[a].x+menuButton[a].width)&&(mouseX>menuButton[a].x)){
+                if((mouseY<menuButton[a].y+menuButton[a].height)&&(mouseY>menuButton[a].y)){
+                    menuButton[a].purchased = true;
+                }
+            }
+        }
+        if(mouseX<cnvs.width/4){
+            gameState.mode = "game";
+        }
+        if(mouseX>cnvs.width*3/4){
+            gameState.mode = "game";
+        }
+        if(mouseY<cnvs.height/8){
+            gameState.mode = "game";
+        }
+        if(mouseY>cnvs.height*7/8){
+            gameState.mode = "game";
+        }
+    }
+    if((mouseX>cnvs.width/10)&&(mouseX<cnvs.width*2/10)){
+        if((mouseY>cnvs.height*18/20)&&(mouseY<cnvs.height*19/20)){
+            gameState.mode = "menu";
+        }
+    }
+}
+setInterval(function(){
+    updateGame();
+    switch(gameState.mode){
+        case "game":
+            drawGame();
+            break;
+        case "menu":
+            drawMenu();
+            break;
+    }
+},33);
+</script>
+</html>
