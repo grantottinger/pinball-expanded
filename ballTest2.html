@@ -1,10 +1,17 @@
 <html>
 <canvas id="canvas" width="300" height="300" style="border: 1px solid black"></canvas>
 <button id="paddleButton">Paddle</button>
+<p id="myX"></p>
+<p id="my135"></p>
+FlagUp: <p id="myFlagUp"></p>
+FlagDown: <p id="myFlagDown"></p>
 <script>
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
+var paddleDownInterval;
+var flagUp = 0;
+var flagDown = 0;
 
 var x = 45;
 rad = x * Math.PI/180
@@ -14,28 +21,71 @@ function draw() {
     ctx.fillRect(0,0,canvas.width,canvas.height);
 	
 	rad = x * Math.PI/180
+	rad90 = (x+90) * Math.PI/180
+	rad270 = (x+270) * Math.PI/180
 	
-	ctx.fillStyle="black";
+	//ctx.fillStyle="black";
+	//ctx.beginPath();
+	//ctx.arc(100,100,10,0,2*Math.PI)
+	//ctx.fill()
+	
+	ctx.fillStyle = "blue";
 	ctx.beginPath();
-	ctx.arc(100,100,10,0,2*Math.PI)
+	ctx.arc((100+(50*Math.sin(rad))),(100 + (50*Math.cos(rad))),5,0,2*Math.PI)
 	ctx.fill()
 	
 	ctx.fillStyle = "blue";
 	ctx.beginPath();
-	ctx.arc((100+(10*Math.sin(rad))),(100 + (10*Math.cos(rad))),2.5,0,2*Math.PI)
+	ctx.arc(100,100,10,0,2*Math.PI)
 	ctx.fill()
 	
-	if (x > 135)
+	//ctx.beginPath();
+	//ctx.arc((100+(5*Math.sin(rad))),(100 + (5*Math.cos(rad))),2.5,0,2*Math.PI)
+	//ctx.fill()
+	
+	ctx.beginPath();
+	ctx.moveTo((100+(10*Math.sin(rad90))), (100 + (10*Math.cos(rad90))));
+	ctx.lineTo((100 + (50*Math.sin(rad) + 5*Math.sin(rad90))), 100 + (50*Math.cos(rad) + 5 * Math.cos(rad90) ));
+	
+	ctx.stroke();
+	
+	ctx.beginPath();
+	ctx.moveTo((100+(10*Math.sin(rad270))), (100 + (10*Math.cos(rad270))));
+	ctx.lineTo((100 + (50*Math.sin(rad) + 5*Math.sin(rad270))), 100 + (50*Math.cos(rad) + 5 * Math.cos(rad270)));
+	ctx.stroke();
+	
+	document.getElementById("myX").innerHTML = x;
+	document.getElementById("my135").innerHTML = (x===135);
+	document.getElementById("myFlagUp").innerHTML = flagUp;
+	document.getElementById("myFlagDown").innerHTML = flagDown;
+	
+	if (flagUp===1)
 	{
-		x = 45;
-		clearInterval(paddleInterval);
+		if (x<=135) {
+		x=x+1;
+		}
+		else {
+		flagUp=0;
+		flagDown=1;
+		}
+	}
+	
+	if (flagDown===1)
+	{
+		if (x>45) {
+		x=x-1;
+		}
+		else {
+		flagDown=0;
+		}
 	}
 }
 
-function movePaddle() {
-	paddleInterval = setInterval(function() {x=x+2},1)
-}
-document.getElementById("paddleButton").addEventListener("click", movePaddle);
+document.getElementById("paddleButton").addEventListener("click", function() 
+	{if (x===45) {
+		flagDown = 0;
+		flagUp = 1;
+	} } );
 setInterval(draw, 1)
 
 </script>
