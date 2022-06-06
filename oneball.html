@@ -25,21 +25,6 @@ var degreeX = 45;
 var rad = degreeX * Math.PI/180
 var rad90 = (degreeX+90) * Math.PI/180
 var rad270 = (degreeX+270) * Math.PI/180
-	
-var paddleFrontCenterX
-var	paddleFrontCenterY
-	
-var	backPaddleTopX
-var	backPaddleTopY
-	
-var	frontPaddleTopX
-var	frontPaddleTopY
-	
-var	frontPaddleBottomX
-var	frontPaddleBottomY
-	
-var	backPaddleBottomX
-var	backPaddleBottomY
 
 var ballXDisp;
 var ballYDisp;
@@ -70,29 +55,25 @@ function Ball(ballX,ballY){
         this.y += this.dy;
 		
 		//gravity velocity
-        this.dy += 1;
+        this.dy += .05;
 		
 		ballXDisp = this.x;
 		ballYDisp = this.y;
 		
-		distance1 = distance(backPaddleTopX,backPaddleTopY,this.x,this.y) + distance(frontPaddleTopX,frontPaddleTopY,this.x,this.y);
-		distance2 = distance(backPaddleTopX,backPaddleTopY,frontPaddleTopX,frontPaddleTopY);
+		distance1 = distance(paddle1.backPaddleTopX,paddle1.backPaddleTopY,this.x,(this.y+ballRadius)) + distance(paddle1.frontPaddleTopX,paddle1.frontPaddleTopY,this.x,(this.y+ballRadius));
+		distance2 = distance(paddle1.backPaddleTopX,paddle1.backPaddleTopY,paddle1.frontPaddleTopX,paddle1.frontPaddleTopY);
 		
-		isGood = distance1 - distance2;
+		distance3 = distance(paddle2.backPaddleTopX,paddle2.backPaddleTopY,this.x,(this.y+ballRadius)) + distance(paddle2.frontPaddleTopX,paddle2.frontPaddleTopY,this.x,(this.y+ballRadius));
+		distance4 = distance(paddle2.backPaddleTopX,paddle2.backPaddleTopY,paddle2.frontPaddleTopX,paddle2.frontPaddleTopY);
 		
-		if ((isGood < 10) && (isGood > -10))
+		isGood = Math.abs(distance1 - distance2);
+		isGood2 = Math.abs(distance3 - distance4);
+		
+		if ((isGood < 2) || (isGood2 < 2))
 		{
 			isHit++;
-			this.dy = -(this.dy-.5);
+			this.dy = -(this.dy-1);
 		}
-		
-		//if (Math.round(distance(backPaddleTopX,backPaddleTopY,this.x,this.y) + distance(frontPaddleTopX,frontPaddleTopY,this.x,this.y)) == Math.round(distance(backPaddleTopX,backPaddleTopY,frontPaddleTopX,frontPaddleTopY)))
-		//{
-		//	isHit++;
-		//	this.dy = -this.dy;
-		//}
-		
-		
 		
         for(z=0;z<bumper.length;z++){
 		
@@ -117,7 +98,7 @@ function Ball(ballX,ballY){
 		
 		//when ball reachs bottom, goes to random position at top of canvas
         if(this.y>=cnvs.height+ballRadius){
-            this.x = 250;
+            this.x = ballRadius+(cnvs.width-ballRadius*2)*Math.random();
             this.y = 0;
             this.dx = 0;
             this.dy = 0;
@@ -137,53 +118,111 @@ function Ball(ballX,ballY){
     }
 }
 
-function paddle(x,y) {
-	paddleBackCenterX = x;
-	paddleBackCenterY = y;
+function paddle(x,y,paddleWidth) {
+	this.paddleBackCenterX = x;
+	this.paddleBackCenterY = y;
 	
+	rad = degreeX * Math.PI/180
+	rad90 = (degreeX+90) * Math.PI/180
+	rad270 = (degreeX+270) * Math.PI/180
 	
+	this.paddleWidth = paddleWidth;
 	
-	frontPaddleRadius = 5;
-	backPaddleRadius = 10;
+	var paddleFrontCenterX
+	var paddleFrontCenterY
 	
-	paddleWidth = 50;
+	var backPaddleTopX
+	var backPaddleTopY
+	
+	var frontPaddleTopX
+	var frontPaddleTopY
+	
+	var frontPaddleBottomX
+	var frontPaddleBottomY
+	
+	var backPaddleBottomX
+	var backPaddleBottomY
+	
+	this.frontPaddleRadius = 5;
+	this.backPaddleRadius = 10;
 	
 	this.draw = function() {
 		rad = degreeX * Math.PI/180
 		rad90 = (degreeX+90) * Math.PI/180
 		rad270 = (degreeX+270) * Math.PI/180
 	
-		paddleFrontCenterX = (paddleBackCenterX + (50 * Math.sin(rad)))
-		paddleFrontCenterY = (paddleBackCenterY + (50 * Math.cos(rad)))
+		this.paddleFrontCenterX = (this.paddleBackCenterX + (this.paddleWidth * Math.sin(rad)))
+		this.paddleFrontCenterY = (this.paddleBackCenterY + (Math.abs(this.paddleWidth) * Math.cos(rad)))
+		
+		//back paddle top
+		if (this.paddleWidth>0)
+		{
+		this.backPaddleTopX = (this.paddleBackCenterX + (this.backPaddleRadius*Math.sin(rad90)));
+		this.backPaddleTopY = (this.paddleBackCenterY + (this.backPaddleRadius*Math.cos(rad90)));
+		}
+		
+		if (this.paddleWidth<0)
+		{
+			this.backPaddleTopX = (this.paddleBackCenterX + (this.backPaddleRadius*Math.sin(-rad90)));
+			this.backPaddleTopY = (this.paddleBackCenterY + (this.backPaddleRadius*Math.cos(-rad90)));
+		}
+		
+		//front paddle top
+		if (this.paddleWidth>0)
+		{
+			this.frontPaddleTopX = (this.paddleBackCenterX + (this.paddleWidth*Math.sin(rad) + this.frontPaddleRadius * Math.sin(rad90)));
+			this.frontPaddleTopY = this.paddleBackCenterY + (Math.abs(this.paddleWidth) * Math.cos(rad) + this.frontPaddleRadius * Math.cos(rad90));
+		}
+		
+		if (this.paddleWidth<0)
+		{
+			this.frontPaddleTopX = (this.paddleBackCenterX + (this.paddleWidth*Math.sin(rad) + this.frontPaddleRadius * Math.sin(-rad90)));
+			this.frontPaddleTopY = this.paddleBackCenterY + (Math.abs(this.paddleWidth) * Math.cos(rad) + this.frontPaddleRadius * Math.cos(-rad90));
+		}
 	
-		backPaddleTopX = (paddleBackCenterX + (backPaddleRadius*Math.sin(rad90)));
-		backPaddleTopY = (paddleBackCenterY + (backPaddleRadius*Math.cos(rad90)));
+		//front paddle bottom
+		if (this.paddleWidth>0)
+		{
+			this.frontPaddleBottomX = (this.paddleBackCenterX + (this.paddleWidth*Math.sin(rad) + this.frontPaddleRadius*Math.sin(rad270)));
+			this.frontPaddleBottomY = this.paddleBackCenterY + (Math.abs(this.paddleWidth)*Math.cos(rad) + this.frontPaddleRadius * Math.cos(rad270));
+		}
+		
+		if (this.paddleWidth<0)
+		{
+			this.frontPaddleBottomX = (this.paddleBackCenterX + (this.paddleWidth*Math.sin(rad) + this.frontPaddleRadius*Math.sin(-rad270)));
+			this.frontPaddleBottomY = this.paddleBackCenterY + (Math.abs(this.paddleWidth)*Math.cos(rad) + this.frontPaddleRadius * Math.cos(-rad270));
+		}
 	
-		frontPaddleTopX = (paddleBackCenterX + (paddleWidth*Math.sin(rad) + frontPaddleRadius * Math.sin(rad90)));
-		frontPaddleTopY = paddleBackCenterY + (paddleWidth * Math.cos(rad) + frontPaddleRadius * Math.cos(rad90));
-	
-		frontPaddleBottomX = (paddleBackCenterX + (paddleWidth*Math.sin(rad) + frontPaddleRadius*Math.sin(rad270)));
-		frontPaddleBottomY = paddleBackCenterY + (paddleWidth*Math.cos(rad) + frontPaddleRadius * Math.cos(rad270));
-	
-		backPaddleBottomX = (paddleBackCenterX+(backPaddleRadius*Math.sin(rad270)))
-		backPaddleBottomY = (paddleBackCenterY + (backPaddleRadius*Math.cos(rad270)))
+		if (this.paddleWidth>0)
+		{
+		this.backPaddleBottomX = (this.paddleBackCenterX + (this.backPaddleRadius*Math.sin(rad270)))
+		this.backPaddleBottomY = (this.paddleBackCenterY + (this.backPaddleRadius*Math.cos(rad270)))
+		}
+		
+		if (this.paddleWidth<0)
+		{
+		this.backPaddleBottomX = (this.paddleBackCenterX + (this.backPaddleRadius*Math.sin(-rad270)))
+		this.backPaddleBottomY = (this.paddleBackCenterY + (this.backPaddleRadius*Math.cos(-rad270)))
+		}
 		
 		//drawing mid-paddle rectangle
 		ctx.fillStyle = "black";
 		ctx.beginPath();
-		ctx.moveTo(backPaddleTopX, backPaddleTopY);
-		ctx.lineTo(frontPaddleTopX, frontPaddleTopY);
-		ctx.lineTo(frontPaddleBottomX, frontPaddleBottomY);
-		ctx.lineTo(backPaddleBottomX, backPaddleBottomY);
-		ctx.lineTo(backPaddleTopX, backPaddleTopY);
+		ctx.moveTo(this.backPaddleTopX, this.backPaddleTopY);
+		ctx.lineTo(this.frontPaddleTopX, this.frontPaddleTopY);
+		ctx.lineTo(this.frontPaddleBottomX, this.frontPaddleBottomY);
+		ctx.lineTo(this.backPaddleBottomX, this.backPaddleBottomY);
+		ctx.lineTo(this.backPaddleTopX, this.backPaddleTopY);
 		ctx.fill();
 	
 		//drawing front paddle circle
-		ctx.arc(paddleFrontCenterX,paddleFrontCenterY,frontPaddleRadius,0,2 * Math.PI);
+		ctx.beginPath();
+		ctx.arc(this.paddleFrontCenterX,this.paddleFrontCenterY,this.frontPaddleRadius,0,2 * Math.PI);
 		ctx.fill();
 	
 		//drawing back paddle circle
-		ctx.arc(paddleBackCenterX,paddleBackCenterY,backPaddleRadius,0,2*Math.PI);
+		ctx.beginPath();
+		ctx.arc(this.paddleBackCenterX,this.paddleBackCenterY,this.backPaddleRadius,0,2*Math.PI);
 		ctx.fill();
 	}
 }
@@ -216,6 +255,7 @@ function redrawEverything(){
 	
 	//drawPaddle((cnvs.width/3)-7.5,(cnvs.height/8)*7);
 	paddle1.draw();
+	paddle2.draw();
 	
 	if (flagUp===1)
 	{
@@ -270,7 +310,9 @@ bumper = [];
 //}
 
 //creating paddle
-paddle1 = new paddle(((cnvs.width/3)*2)-7.5,(cnvs.height/8)*7);
+paddle1 = new paddle((cnvs.width/3)-7.5,(cnvs.height/8)*7,50);
+paddle2 = new paddle(((cnvs.width/3)*2),(cnvs.height/8)*7,-50);
+
 
 //updates ball and redraws objects
 function updateCanvas(){
@@ -278,20 +320,20 @@ for(a=0;a<ball.length;a++){
         ball[a].update();
     }
     redrawEverything();
-	document.getElementById("bptx").innerHTML = backPaddleTopX;
-	document.getElementById("ballXDisplay").innerHTML = ballXDisp;
-	document.getElementById("fptx").innerHTML = frontPaddleTopX;
-	document.getElementById("fpty").innerHTML = frontPaddleTopY;
-	document.getElementById("bpty").innerHTML = backPaddleTopY;
-	document.getElementById("ballYDisplay").innerHTML = ballYDisp;
-	document.getElementById("isHitTell").innerHTML = isHit;
+	document.getElementById("bptx").innerHTML = paddle1.backPaddleTopX;
+	//document.getElementById("ballXDisplay").innerHTML = ballXDisp;
+	//document.getElementById("fptx").innerHTML = frontPaddleTopX;
+	//document.getElementById("fpty").innerHTML = frontPaddleTopY;
+	//document.getElementById("bpty").innerHTML = backPaddleTopY;
+	//document.getElementById("ballYDisplay").innerHTML = ballYDisp;
+	//document.getElementById("isHitTell").innerHTML = isHit;
 	document.getElementById("distance1Disp").innerHTML = distance1;
 	document.getElementById("distance2Disp").innerHTML = distance2;
 	//document.getElementById("slopeDisp").innerHTML = slopePaddle;
 	//document.getElementById("ballLineTestDisp").innerHTML = ballLineTest;
 }
 
-setInterval(updateCanvas,33);
+setInterval(updateCanvas,1);
 
 document.getElementById("paddleButton").addEventListener("click", function() 
 	{if (degreeX<=45) {
